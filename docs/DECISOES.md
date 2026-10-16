@@ -118,6 +118,26 @@ Toda resposta traz `serverTime`, que é a referência de horário para o countdo
 - A disponibilidade é calculada por SQL em cada leitura, numa única definição (`OCCUPIED_SQL`) que a criação de reserva também usa. Assim a tela e a regra de negócio nunca divergem.
 - Eventos que já começaram continuam listados, com `hasStarted: true`. A API recusa reservas para eles.
 
+### Frontend
+
+```
+frontend/src/
+  api/          client (fetch + erro padronizado), hooks do React Query, relógio do servidor, tipos
+  components/   Layout (cabeçalho), ProtectedRoute, Countdown, componentes visuais (ui.tsx)
+  pages/        Login, Eventos, Detalhe do evento, Reserva, Minhas reservas
+  styles/       tokens.css (copiado do design system) + global.css
+  test/         MSW + Testing Library
+```
+
+- **Estado do servidor com TanStack Query.** Depois de criar, confirmar ou cancelar, inclusive quando a API responde 409, as consultas de eventos e reservas são invalidadas e buscadas de novo. É assim que a disponibilidade se atualiza sem recarregar a página.
+- **Sessão:** a query `me` é a fonte da verdade. Qualquer 401 em qualquer chamada marca o usuário como deslogado e o `ProtectedRoute` manda para o login.
+- **Countdown:** cada resposta de reserva traz `serverTime`. O app guarda a diferença entre esse horário e o relógio do navegador e conta até `expiresAt` usando essa referência. Ao chegar a zero, não decide nada sozinho: consulta a API e mostra o estado real.
+- **Sem clique duplo:** botões ficam desabilitados e com `aria-busy` durante o envio.
+- **Proxy do Vite:** o navegador chama `/api` no mesmo endereço do frontend. Como é a mesma origem, o cookie `SameSite=Lax` funciona sem configurar CORS.
+- **Paginação com 2 itens por página**, de propósito: com os 3 eventos do seed, a paginação já aparece.
+- **Design system:** os tokens (cores, tipografia, espaçamento, sombras) foram copiados do export do Claude Design. Os componentes do DS usam estilos inline em JSX; aqui foram reescritos como classes CSS sobre os mesmos tokens. Os ícones são do `lucide-react` (mesma família que o DS indica), sem depender de CDN.
+- **Acessibilidade básica:** `label` em todos os campos, foco visível, link "pular para o conteúdo", `role="alert"` para erros e `role="status"` para sucesso.
+
 ### Dinheiro
 
 Valores inteiros em centavos (`price_cents`, `total_cents`). A reserva congela o `unit_price_cents` no momento em que é criada.
@@ -145,10 +165,10 @@ Formato único: `{ "error": { "code": "...", "message": "...", "details"?: [...]
 | 2 | Banco: conexão, migrations, seed idempotente | Concluída |
 | 3 | Autenticação: login, logout, `/me`, middleware, erros padronizados | Concluída |
 | 4 | Eventos: listagem com busca e paginação, detalhe com disponibilidade | Concluída |
-| 5 | Reservas: criar (protegida), confirmar idempotente, cancelar, listar | Em andamento |
-| 6 | Testes obrigatórios do backend (cenários 1 a 5) | Adiantada na fase 5 |
-| 7 | Frontend: telas, countdown, tratamento de erros | |
-| 8 | Teste de interface (cenário 6), README e AI_USAGE.md | |
+| 5 | Reservas: criar (protegida), confirmar idempotente, cancelar, listar | Concluída |
+| 6 | Testes obrigatórios do backend (cenários 1 a 5) | Concluída (junto com a fase 5) |
+| 7 | Frontend: telas, countdown, tratamento de erros, teste do cenário 6 | Em andamento |
+| 8 | README e AI_USAGE.md | |
 
 Cada fase vai numa branch própria e é revisada antes do merge.
 
@@ -158,9 +178,11 @@ Cada fase vai numa branch própria e é revisada antes do merge.
 2. **Docker para o PostgreSQL → descartado.** O Docker não era exigido pelo teste (foi uma sugestão da IA, apresentada como se fosse decisão). No PC corporativo, o Docker Desktop não abriu: falhou a verificação de grupo do domínio da empresa, e ele ainda pode exigir licença paga em empresas grandes.
 3. **PostgreSQL → SQLite.** O teste aceita os dois. O SQLite elimina riscos de ambiente (instalador, permissões, porta) e garante a consistência com `BEGIN IMMEDIATE`. Também facilita para o avaliador rodar o projeto do zero.
 4. **better-sqlite3 + Drizzle → `node:sqlite` + SQL puro.** O `better-sqlite3` não tinha binário para o Node 26 e tentou compilar, o que exige Python e Build Tools. O Drizzle 0.45 (estável) não suporta o `node:sqlite` (verificado no pacote publicado). Resultado: zero dependência nativa e SQL explícito.
+5. **TypeScript 7 no backend → TypeScript 6 em todo o monorepo.** O npm instalou o TS 7 no backend e ele ficou na raiz do `node_modules`. O `typescript-eslint` do frontend (que suporta até o TS 6.0) acabava carregando o TS 7 e o lint quebrava. Agora a versão é única, fixada com `overrides` no `package.json` da raiz.
 
 ## Limitações conhecidas
 
+- A fonte Montserrat vem do Google Fonts. Sem internet, o app usa a fonte do sistema.
 - O `node:sqlite` ainda emite `ExperimentalWarning` no Node 22–26. É inofensivo.
 - O SQLite garante consistência entre processos da mesma máquina, não entre máquinas diferentes.
 - A busca usa `LIKE`, que no SQLite ignora maiúsculas/minúsculas só em letras sem acento: "rock" encontra "Rock", mas "ELETRÔNICA" não encontra "Eletrônica". Para resolver, seria preciso uma coluna normalizada (sem acento, minúscula).

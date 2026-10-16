@@ -4,13 +4,16 @@ export interface User {
   id: number;
   email: string;
   name: string;
+  role: 'user' | 'admin';
 }
 
 export interface EventItem {
   id: number;
   name: string;
+  subtitle: string | null;
   venue: string;
   startsAt: string;
+  imageUrl: string;
   priceCents: number;
   capacity: number;
   available: number;
@@ -34,7 +37,18 @@ export interface Reservation {
   expiresAt: string;
   confirmedAt: string | null;
   cancelledAt: string | null;
-  event: { id: number; name: string; venue: string; startsAt: string };
+  event: { id: number; name: string; subtitle: string | null; venue: string; startsAt: string; imageUrl: string };
+}
+
+// Dados do formulário de evento no admin (preço em centavos, data em ISO UTC).
+export interface EventInput {
+  name: string;
+  subtitle: string | null;
+  venue: string;
+  startsAt: string;
+  priceCents: number;
+  capacity: number;
+  imageUrl: string | null;
 }
 
 export interface WithServerTime<T> {

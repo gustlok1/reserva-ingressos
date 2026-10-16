@@ -1,0 +1,620 @@
+/* Telas no estilo das referências do Figma (extras pós-entrega): cabeçalho com busca,
+   home com destaque, cards de evento com fita de "ESGOTADO", card de pedido e área da conta. */
+
+/* ---------- Cabeçalho ---------- */
+
+.header-search {
+  flex: 1;
+  min-width: 200px;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--brand);
+  box-shadow: var(--shadow-inset-on-brand);
+  color: var(--text-on-brand);
+}
+
+.header-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-on-brand);
+  font: var(--text-input);
+}
+
+.header-search input::placeholder {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.header-search:focus-within {
+  outline: 2px solid var(--text-on-brand);
+  outline-offset: 2px;
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+/* Botão "LOGIN" do cabeçalho: escuro com moldura laranja clara. */
+.button--header-dark {
+  min-height: 36px;
+  padding: 0 var(--space-5);
+  background: linear-gradient(180deg, #2a2a2a, #121212);
+  color: var(--text-strong);
+  box-shadow: 0 0 0 1px #000, 0 0 0 4px var(--orange-300), var(--shadow-on-brand);
+  margin: 4px;
+}
+
+.button--header-dark:hover {
+  color: var(--text-strong);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--ink-900);
+  color: var(--text-brand);
+  font: var(--fw-black) var(--fs-sm) / 1 var(--font-display);
+  box-shadow: var(--shadow-on-brand);
+}
+
+.avatar:hover {
+  text-decoration: none;
+  color: var(--brand-hover);
+}
+
+.avatar--large {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-squircle);
+  font-size: 56px;
+  background: radial-gradient(circle at 50% 45%, #2a2a2a 0 55%, #151515 56%);
+  box-shadow: var(--shadow-raised), inset 0 0 0 10px #1b1b1b;
+  text-shadow: var(--text-glow-brand);
+}
+
+/* ---------- Títulos de seção ---------- */
+
+.section-title {
+  margin: var(--space-8) 0 var(--space-2);
+  text-align: center;
+  font: var(--fw-regular) clamp(28px, 6vw, 48px) / 1.1 var(--font-display);
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.section-title strong {
+  font-weight: var(--fw-black);
+  color: var(--text-brand);
+  text-shadow: var(--text-glow-brand);
+}
+
+/* ---------- Destaque da home ---------- */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-8);
+  background: var(--ink-900);
+}
+
+.hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(10, 10, 10, 0.92) 0%, rgba(10, 10, 10, 0.55) 55%, rgba(10, 10, 10, 0.15) 100%);
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.hero__title {
+  margin: 0;
+  font: var(--fw-black) clamp(32px, 7vw, 56px) / 1 var(--font-display);
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.hero__subtitle {
+  margin: 0;
+  font: var(--fw-semibold) var(--fs-sm) / 1.3 var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--text-muted);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(20, 20, 20, 0.85);
+  box-shadow: var(--shadow-inset);
+  font: var(--fw-semibold) var(--fs-xs) / 1 var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--text-body);
+}
+
+/* ---------- Card de evento ---------- */
+
+.event-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-8);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.event-card {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  border-radius: var(--radius-xl);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-raised);
+  text-align: center;
+  overflow: hidden; /* corta as fitas de "esgotado" na borda do card */
+}
+
+.event-card__date {
+  margin: 0;
+  font: var(--fw-regular) var(--fs-lg) / 1.2 var(--font-sans);
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.event-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.95;
+}
+
+.event-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  display: block;
+}
+
+.event-card__info {
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+}
+
+.event-card__venue {
+  margin: 0;
+  font: var(--fw-regular) var(--fs-lg) / 1.2 var(--font-sans);
+  color: var(--text-body);
+}
+
+.event-card__name {
+  margin: 0;
+  font: var(--fw-black) var(--fs-xl) / 1.15 var(--font-display);
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.event-card__subtitle {
+  margin: 0;
+  font: var(--fw-bold) var(--fs-md) / 1.3 var(--font-sans);
+  color: var(--text-brand);
+}
+
+.event-card__price {
+  margin: var(--space-1) 0 0;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+/* Esgotado / evento iniciado: card apagado e fitas cruzadas sobre a imagem. */
+.event-card--soldout .event-card__date,
+.event-card--soldout .event-card__venue,
+.event-card--soldout .event-card__name,
+.event-card--soldout .event-card__price,
+.event-card--soldout img {
+  opacity: 0.45;
+}
+
+.event-card--soldout .event-card__subtitle {
+  opacity: 0.6;
+}
+
+.tape {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  top: 50%;
+  padding: 6px 0;
+  background: var(--brand);
+  color: #1a1a1a;
+  font: var(--fw-black) var(--fs-sm) / 1 var(--font-display);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.tape--a {
+  transform: translateY(-50%) rotate(18deg);
+}
+
+.tape--b {
+  transform: translateY(-50%) rotate(-18deg);
+}
+
+/* ---------- Detalhe do evento ---------- */
+
+.event-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.event-detail__image {
+  width: 100%;
+  aspect-ratio: 1 / 0.95;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
+}
+
+.event-detail__subtitle {
+  margin: 0 0 var(--space-4);
+  font: var(--fw-bold) var(--fs-lg) / 1.3 var(--font-sans);
+  color: var(--text-brand);
+}
+
+/* ---------- Card de pedido (reserva) ---------- */
+
+.order {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  gap: var(--space-6);
+  padding: var(--space-5);
+  border-radius: var(--radius-xl);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-raised);
+}
+
+.order__image {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+}
+
+.order__body {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.order__number {
+  margin: 0;
+  font: var(--text-body-sm);
+  color: var(--text-muted);
+}
+
+.order__name {
+  margin: 0;
+  font: var(--fw-black) var(--fs-2xl) / 1.1 var(--font-display);
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+
+.order__rows {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--fw-regular) var(--fs-md) / 1.3 var(--font-sans);
+}
+
+.order__rows li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.order__rows svg {
+  color: var(--brand);
+  flex: none;
+}
+
+.order__total {
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-divider);
+  font: var(--fw-extrabold) var(--fs-xl) / 1.2 var(--font-sans);
+  color: var(--text-strong);
+}
+
+.order__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+/* Selo de status do pedido: fundo claro em relevo e texto laranja, como no Figma. */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #ffffff, #e4e4e4);
+  box-shadow: 0 0 0 2px #1a1a1a, 0 3px 8px rgba(0, 0, 0, 0.6);
+  font: var(--fw-bold) var(--fs-xs) / 1 var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--brand-press);
+}
+
+.status-pill--CONFIRMED {
+  color: #1e7f4f;
+}
+
+.status-pill--CANCELLED,
+.status-pill--EXPIRED {
+  color: #6b6b6b;
+}
+
+/* ---------- Área da conta (sidebar do Figma) ---------- */
+
+.account {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.account__sidebar {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+  padding: var(--space-8) var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--gradient-panel);
+  box-shadow: var(--shadow-raised);
+}
+
+.account__name {
+  margin: 0;
+  font: var(--fw-black) var(--fs-xl) / 1.2 var(--font-display);
+  color: var(--text-brand);
+  text-shadow: var(--text-glow-brand);
+  text-align: center;
+}
+
+.account__menu {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+  margin-top: var(--space-4);
+}
+
+/* Itens do menu (equivalente ao MenuItem do design system). */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #262626, #151515);
+  color: var(--text-strong);
+  font: var(--text-nav);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0 0 2px #0e0e0e, var(--shadow-pill);
+  cursor: pointer;
+  transition: box-shadow var(--dur-base) var(--ease-out);
+}
+
+.menu-item:hover {
+  color: var(--text-strong);
+  text-decoration: none;
+}
+
+.menu-item.active {
+  box-shadow: var(--glow-brand), var(--shadow-pill);
+}
+
+.menu-item.active svg {
+  color: var(--brand);
+}
+
+.account__content {
+  display: grid;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+}
+
+.stat {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-raised-sm);
+}
+
+.stat__value {
+  display: block;
+  font: var(--fw-black) var(--fs-2xl) / 1.1 var(--font-display);
+  color: var(--text-brand);
+}
+
+/* ---------- Admin ---------- */
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
+  background: var(--surface-panel);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--text-body-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-divider);
+  white-space: nowrap;
+}
+
+.table th {
+  color: var(--text-muted);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-caps);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-5);
+}
+
+.image-preview {
+  width: 160px;
+  aspect-ratio: 1 / 0.95;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised-sm);
+}
+
+/* ---------- Rodapé ---------- */
+
+.footer {
+  border-top: 1px solid var(--border-divider);
+  margin-top: var(--space-12);
+}
+
+.footer__inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font: var(--fw-semibold) var(--fs-xs) / 1.6 var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--text-brand);
+}
+
+/* ---------- Celular ---------- */
+
+@media (max-width: 800px) {
+  .event-detail,
+  .account {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .account__sidebar {
+    padding: var(--space-5);
+  }
+
+  .avatar--large {
+    width: 96px;
+    height: 96px;
+    font-size: 34px;
+    border-radius: 28px;
+  }
+
+  .account__menu {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .header-search {
+    order: 4;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .order {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .order__image {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+
+  .hero {
+    padding: var(--space-5);
+    min-height: 260px;
+  }
+}
+
+/* No cabeçalho novo, a busca ocupa o espaço livre (não o menu). */
+.header .nav {
+  flex: none;
+}
+
+/* Esgotado: o botão continua clicável (leva ao detalhe), mas apagado como no Figma. */
+.event-card--soldout .button--primary {
+  opacity: 0.55;
+}

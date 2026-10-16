@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { useReservations } from '../api/hooks';
-import { EmptyState, ErrorState, LoadingState, PageTitle, StatusBadge } from '../components/ui';
-import { formatDateTime, formatMoney } from '../lib/format';
+import { OrderCard } from '../components/OrderCard';
+import { EmptyState, ErrorState, LoadingState, PageTitle } from '../components/ui';
 
 // Lista só as reservas do usuário logado (a API filtra pela sessão), com o estado efetivo de cada uma.
 export function MyReservationsPage() {
@@ -20,22 +20,19 @@ export function MyReservationsPage() {
           Você ainda não tem reservas. <Link to="/events">Ver eventos</Link>
         </EmptyState>
       ) : (
-        <ul className="event-grid">
+        <ul className="account__content" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
           {reservations.data.map((reservation) => (
             <li key={reservation.id}>
-              <Link to={`/reservations/${reservation.id}`} className="card">
-                <div className="row row--between">
-                  <h2 className="card__title">{reservation.event.name}</h2>
-                  <StatusBadge status={reservation.status} />
+              <OrderCard reservation={reservation}>
+                <div className="order__actions">
+                  <Link
+                    to={`/reservations/${reservation.id}`}
+                    className={`button ${reservation.status === 'PENDING' ? 'button--primary' : 'button--secondary'}`}
+                  >
+                    {reservation.status === 'PENDING' ? 'Finalizar compra' : 'Ver pedido'}
+                  </Link>
                 </div>
-                <ul className="meta">
-                  <li>{formatDateTime(reservation.event.startsAt)}</li>
-                  <li>
-                    {reservation.quantity} {reservation.quantity === 1 ? 'ingresso' : 'ingressos'}
-                  </li>
-                </ul>
-                <span className="price">{formatMoney(reservation.totalCents)}</span>
-              </Link>
+              </OrderCard>
             </li>
           ))}
         </ul>

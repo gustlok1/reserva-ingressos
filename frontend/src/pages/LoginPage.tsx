@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router';
 import { errorMessage } from '../api/client';
 import { useLogin, useMe } from '../api/hooks';
 import { Alert, Button, PageTitle } from '../components/ui';
@@ -22,45 +22,50 @@ export function LoginPage() {
   };
 
   return (
-    <main className="page">
-      <form className="login panel" onSubmit={handleSubmit} noValidate>
-        <PageTitle>Entrar</PageTitle>
+    <form className="login panel" onSubmit={handleSubmit} noValidate>
+      <PageTitle>Entrar</PageTitle>
 
-        {login.isError && <Alert kind="error">{errorMessage(login.error)}</Alert>}
+      {login.isError && <Alert kind="error">{errorMessage(login.error)}</Alert>}
 
-        <label className="field">
-          <span className="field__label">E-mail</span>
-          <input
-            className="input"
-            type="email"
-            name="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="voce@exemplo.com"
-          />
-        </label>
+      <label className="field">
+        <span className="field__label">E-mail</span>
+        <input
+          className="input"
+          type="email"
+          name="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="voce@exemplo.com"
+        />
+      </label>
 
-        <label className="field">
-          <span className="field__label">Senha</span>
-          <input
-            className="input"
-            type="password"
-            name="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+      <label className="field">
+        <span className="field__label">Senha</span>
+        <input
+          className="input"
+          type="password"
+          name="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </label>
 
-        <Button type="submit" loading={login.isPending} disabled={!email || !password}>
-          Entrar
-        </Button>
+      <Button type="submit" loading={login.isPending} disabled={!email || !password}>
+        Entrar
+      </Button>
 
-        <p className="muted">Contas de demonstração: ana@exemplo.com ou bruno@exemplo.com, senha senha123.</p>
-      </form>
-    </main>
+      <p>
+        Ainda não tem conta?{' '}
+        <Link to="/register" state={location.state}>
+          Cadastre-se
+        </Link>
+      </p>
+
+      <p className="muted">Contas de demonstração: ana@exemplo.com, bruno@exemplo.com ou admin@exemplo.com, senha senha123.</p>
+    </form>
   );
 }

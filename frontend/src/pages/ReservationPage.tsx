@@ -4,13 +4,13 @@ import { ArrowLeft } from 'lucide-react';
 import { errorMessage } from '../api/client';
 import { useReservation, useReservationAction } from '../api/hooks';
 import { Countdown } from '../components/Countdown';
-import { Alert, Button, ErrorState, LoadingState, PageTitle, StatusBadge } from '../components/ui';
-import { formatDateTime, formatMoney, formatShortDateTime } from '../lib/format';
+import { OrderCard } from '../components/OrderCard';
+import { Alert, Button, ErrorState, LoadingState } from '../components/ui';
 
 const FINAL_MESSAGES = {
   CONFIRMED: { kind: 'success', text: 'Compra confirmada! Seus ingressos estão garantidos.' },
   CANCELLED: { kind: 'success', text: 'Reserva cancelada. Os ingressos foram liberados.' },
-  EXPIRED: { kind: 'error', text: 'O prazo de 5 minutos terminou e a reserva expirou. Os ingressos foram liberados.' },
+  EXPIRED: { kind: 'error', text: 'O prazo para confirmar terminou e a reserva expirou. Os ingressos foram liberados.' },
 } as const;
 
 export function ReservationPage() {
@@ -37,50 +37,24 @@ export function ReservationPage() {
         <ArrowLeft size={16} aria-hidden /> Minhas reservas
       </Link>
 
-      <PageTitle>Reserva #{data.id}</PageTitle>
-
-      <section className="panel" aria-labelledby="resumo">
-        <div className="row row--between">
-          <h2 id="resumo" className="card__title">
-            {data.event.name}
-          </h2>
-          <StatusBadge status={data.status} />
-        </div>
-
-        <dl className="summary" style={{ margin: 'var(--space-4) 0' }}>
-          <dt>Data do evento</dt>
-          <dd>{formatDateTime(data.event.startsAt)}</dd>
-          <dt>Local</dt>
-          <dd>{data.event.venue}</dd>
-          <dt>Quantidade</dt>
-          <dd>{data.quantity}</dd>
-          <dt>Preço unitário</dt>
-          <dd>{formatMoney(data.unitPriceCents)}</dd>
-          <dt>Total</dt>
-          <dd>
-            <strong>{formatMoney(data.totalCents)}</strong>
-          </dd>
-          <dt>Reservada em</dt>
-          <dd>{formatShortDateTime(data.createdAt)}</dd>
-        </dl>
-
+      <OrderCard reservation={data} headingLevel="h1">
         {finalMessage && <Alert kind={finalMessage.kind}>{finalMessage.text}</Alert>}
         {actionError && data.status === 'PENDING' && <Alert kind="error">{errorMessage(actionError)}</Alert>}
 
         {data.status === 'PENDING' && (
-          <div className="row row--between" style={{ marginTop: 'var(--space-4)', alignItems: 'end' }}>
+          <>
             <Countdown expiresAt={data.expiresAt} onExpire={handleExpire} />
-            <div className="row">
+            <div className="order__actions">
               <Button variant="secondary" onClick={() => cancel.mutate()} loading={cancel.isPending} disabled={busy}>
-                Cancelar reserva
+                Remover esse pedido
               </Button>
               <Button onClick={() => confirm.mutate()} loading={confirm.isPending} disabled={busy}>
-                Confirmar compra
+                Finalizar compra
               </Button>
             </div>
-          </div>
+          </>
         )}
-      </section>
+      </OrderCard>
     </>
   );
 }

@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
-import { ArrowLeft, CalendarDays, MapPin } from 'lucide-react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
+import { ArrowLeft, CalendarDays, Clock, MapPin } from 'lucide-react';
 import { errorMessage } from '../api/client';
-import { useCreateReservation, useEvent } from '../api/hooks';
+import { useCreateReservation, useEvent, useMe } from '../api/hooks';
 import { Alert, Button, ErrorState, LoadingState, PageTitle } from '../components/ui';
-import { formatDateTime, formatMoney } from '../lib/format';
+import { formatLongDate, formatMoney, formatTime } from '../lib/format';
 import { AvailabilityBadge } from './EventsPage';
 
 const QUANTITIES = [1, 2, 3, 4];
@@ -12,8 +12,10 @@ const QUANTITIES = [1, 2, 3, 4];
 export function EventDetailPage() {
   const id = Number(useParams().id);
   const event = useEvent(id);
+  const { data: user } = useMe();
   const createReservation = useCreateReservation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [quantity, setQuantity] = useState(1);
 
   if (event.isPending) return <LoadingState label="Carregando evento..." />;
@@ -37,50 +39,67 @@ export function EventDetailPage() {
         <ArrowLeft size={16} aria-hidden /> Voltar para eventos
       </Link>
 
-      <PageTitle>{data.name}</PageTitle>
+      <div className="event-detail">
+        <img className="event-detail__image" src={data.imageUrl} alt="" />
 
-      <section className="panel" aria-labelledby="reservar">
-        <ul className="meta">
-          <li>
-            <CalendarDays size={16} aria-hidden /> {formatDateTime(data.startsAt)}
-          </li>
-          <li>
-            <MapPin size={16} aria-hidden /> {data.venue}
-          </li>
-        </ul>
+        <section className="panel" aria-labelledby="reservar">
+          <PageTitle>{data.name}</PageTitle>
+          {data.subtitle && <p className="event-detail__subtitle">{data.subtitle}</p>}
 
-        <div className="row row--between" style={{ margin: 'var(--space-6) 0' }}>
-          <span className="price">{formatMoney(data.priceCents)}</span>
-          <AvailabilityBadge event={data} />
-        </div>
+          <ul className="order__rows">
+            <li>
+              <CalendarDays size={18} aria-hidden /> {formatLongDate(data.startsAt)}
+            </li>
+            <li>
+              <Clock size={18} aria-hidden /> {formatTime(data.startsAt)}
+            </li>
+            <li>
+              <MapPin size={18} aria-hidden /> {data.venue}
+            </li>
+          </ul>
 
-        <h2 id="reservar" className="card__title">
-          Reservar ingressos
-        </h2>
+          <div className="row row--between" style={{ margin: 'var(--space-6) 0' }}>
+            <span className="price">{formatMoney(data.priceCents)}</span>
+            <AvailabilityBadge event={data} />
+          </div>
 
-        {createReservation.isError && <Alert kind="error">{errorMessage(createReservation.error)}</Alert>}
+          <h2 id="reservar" className="card__title">
+            Reservar ingressos
+          </h2>
 
-        <form className="row" onSubmit={handleSubmit} style={{ marginTop: 'var(--space-4)', alignItems: 'end' }}>
-          <label className="field">
-            <span className="field__label">Quantidade</span>
-            <select className="input" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} disabled={!canReserve}>
-              {QUANTITIES.map((n) => (
-                <option key={n} value={n}>
-                  {n} {n === 1 ? 'ingresso' : 'ingressos'}
-                </option>
-              ))}
-            </select>
-          </label>
+          {createReservation.isError && <Alert kind="error">{errorMessage(createReservation.error)}</Alert>}
 
-          <Button type="submit" loading={createReservation.isPending} disabled={!canReserve}>
-            Reservar · {formatMoney(data.priceCents * quantity)}
-          </Button>
-        </form>
+          {user ? (
+            <form className="row" onSubmit={handleSubmit} style={{ marginTop: 'var(--space-4)', alignItems: 'end' }}>
+              <label className="field">
+                <span className="field__label">Quantidade</span>
+                <select className="input" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} disabled={!canReserve}>
+                  {QUANTITIES.map((n) => (
+                    <option key={n} value={n}>
+                      {n} {n === 1 ? 'ingresso' : 'ingressos'}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-        <p className="muted" style={{ marginTop: 'var(--space-4)' }}>
-          A reserva fica válida por 5 minutos para você confirmar a compra.
-        </p>
-      </section>
+              <Button type="submit" loading={createReservation.isPending} disabled={!canReserve}>
+                Reservar · {formatMoney(data.priceCents * quantity)}
+              </Button>
+            </form>
+          ) : (
+            // Catálogo é público, mas reservar exige login: volta para cá depois de entrar.
+            <p style={{ marginTop: 'var(--space-4)' }}>
+              <Link to="/login" state={{ from: location.pathname }} className="button button--primary">
+                Entrar para reservar
+              </Link>
+            </p>
+          )}
+
+          <p className="muted" style={{ marginTop: 'var(--space-4)' }}>
+            A reserva fica válida por alguns minutos para você confirmar a compra.
+          </p>
+        </section>
+      </div>
     </>
   );
 }

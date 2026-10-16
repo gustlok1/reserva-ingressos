@@ -8,6 +8,8 @@ React + Node.js, com TypeScript nos dois lados e SQLite como banco relacional.
 |---|---|---|
 | ![Catálogo](docs/screenshots/eventos.png) | ![Reserva](docs/screenshots/reserva.png) | ![Conflito](docs/screenshots/conflito-409.png) |
 
+> **Branch `plus-features`:** além do escopo do teste, esta branch traz o visual do Figma, catálogo público, cadastro, perfil e admin de eventos. Veja [`docs/EXTRAS.md`](docs/EXTRAS.md). A versão entregue está congelada na branch `entrega-v1`.
+
 Documentos complementares:
 - [`docs/DECISOES.md`](docs/DECISOES.md): estrutura, autenticação, concorrência, expiração, histórico de decisões e limitações.
 - [`AI_USAGE.md`](AI_USAGE.md): como a IA foi usada e validada.
@@ -85,6 +87,7 @@ O frontend repassa as chamadas `/api` para o backend (proxy do Vite). Como tudo 
 |---|---|---|
 | Ana Souza | `ana@exemplo.com` | `senha123` |
 | Bruno Lima | `bruno@exemplo.com` | `senha123` |
+| Admin Dry (só na `plus-features`) | `admin@exemplo.com` | `senha123` |
 
 Eventos criados pelo seed (datas relativas ao dia em que o seed roda, sempre futuras):
 

@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from './client';
 import { ME_KEY } from './query-client';
-import type { EventItem, Paginated, Reservation, User, WithServerTime } from './types';
+import type { EventInput, EventItem, Paginated, Reservation, User, WithServerTime } from './types';
 
 // ---------- Autenticação ----------
 
@@ -25,6 +25,23 @@ export function useLogin() {
   return useMutation({
     mutationFn: (credentials: { email: string; password: string }) =>
       api<{ user: User }>('/api/auth/login', { method: 'POST', body: credentials }),
+    onSuccess: ({ user }) => queryClient.setQueryData(ME_KEY, user),
+  });
+}
+
+export function useRegister() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { name: string; email: string; password: string }) =>
+      api<{ user: User }>('/api/auth/register', { method: 'POST', body: input }),
+    onSuccess: ({ user }) => queryClient.setQueryData(ME_KEY, user),
+  });
+}
+
+export function useUpdateMe() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { name: string }) => api<{ user: User }>('/api/auth/me', { method: 'PATCH', body: input }),
     onSuccess: ({ user }) => queryClient.setQueryData(ME_KEY, user),
   });
 }
@@ -57,6 +74,19 @@ export function useEvent(id: number) {
   return useQuery({
     queryKey: ['event', id],
     queryFn: async () => (await api<{ data: EventItem }>(`/api/events/${id}`)).data,
+  });
+}
+
+// Admin: cria (sem id) ou edita (com id) um evento.
+export function useSaveEvent(id?: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: EventInput) =>
+      api<{ data: EventItem }>(id ? `/api/admin/events/${id}` : '/api/admin/events', { method: id ? 'PUT' : 'POST', body: input }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['events'] });
+      void queryClient.invalidateQueries({ queryKey: ['event'] });
+    },
   });
 }
 

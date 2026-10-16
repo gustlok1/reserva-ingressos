@@ -78,9 +78,9 @@ describe('fluxos da interface', () => {
     );
     renderApp('/reservations/10');
 
-    expect(await screen.findByText(/o prazo de 5 minutos terminou/i)).toBeInTheDocument();
+    expect(await screen.findByText(/o prazo para confirmar terminou/i)).toBeInTheDocument();
     expect(screen.getByText('Expirada')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /confirmar compra/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /finalizar compra/i })).not.toBeInTheDocument();
     await waitFor(() => expect(reservationRequests).toBe(2));
   });
 
@@ -99,9 +99,61 @@ describe('fluxos da interface', () => {
     renderApp('/reservations/10');
 
     expect(await screen.findByText('04:00')).toBeInTheDocument(); // 12:05 - 12:01 pelo relógio do servidor
-    await user.click(screen.getByRole('button', { name: /confirmar compra/i }));
+    await user.click(screen.getByRole('button', { name: /finalizar compra/i }));
 
     expect(await screen.findByRole('status')).toHaveTextContent('Compra confirmada!');
     expect(screen.getByText('Confirmada')).toBeInTheDocument();
+  });
+});
+
+describe('extras pós-entrega', () => {
+  const anonymous = http.get('*/api/auth/me', () => HttpResponse.json({ error: { code: 'UNAUTHORIZED', message: 'x' } }, { status: 401 }));
+
+  it('a home é pública e marca o evento esgotado', async () => {
+    server.use(
+      anonymous,
+      http.get('*/api/events', () =>
+        HttpResponse.json({
+          data: [makeEvent({ id: 1, name: 'Rock na Arena', available: 10 }), makeEvent({ id: 3, available: 0 })],
+          pagination: { page: 1, pageSize: 6, total: 2, totalPages: 1 },
+        }),
+      ),
+    );
+    renderApp('/');
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Rock na Arena' })).toBeInTheDocument(); // destaque
+    expect(screen.getByRole('article', { name: /Camarote VIP - Noite Eletrônica, Esgotado/ })).toHaveClass('event-card--soldout');
+    expect(screen.getByRole('link', { name: 'Login' })).toBeInTheDocument();
+  });
+
+  it('cadastro mostra o erro da API embaixo do campo', async () => {
+    server.use(
+      anonymous,
+      http.post('*/api/auth/register', () =>
+        HttpResponse.json(
+          { error: { code: 'VALIDATION_ERROR', message: 'Dados inválidos.', details: [{ field: 'password', message: 'A senha precisa ter pelo menos 8 caracteres.' }] } },
+          { status: 400 },
+        ),
+      ),
+    );
+    const user = userEvent.setup();
+    renderApp('/register');
+
+    await user.type(await screen.findByLabelText('Nome completo'), 'Carla Dias');
+    await user.type(screen.getByLabelText('E-mail'), 'carla@exemplo.com');
+    await user.type(screen.getByLabelText(/^Senha/), '123');
+    await user.type(screen.getByLabelText('Confirmar senha'), '123');
+    await user.click(screen.getByRole('button', { name: 'Criar conta' }));
+
+    expect(await screen.findByText('A senha precisa ter pelo menos 8 caracteres.')).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Senha/)).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('usuário comum não vê a área de admin', async () => {
+    server.use(loggedIn);
+    renderApp('/admin/events');
+
+    expect(await screen.findByText('Esta área é só para administradores.')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /admin: eventos/i })).not.toBeInTheDocument();
   });
 });

@@ -1,8 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { errorMessage } from '../api/client';
-import type { ReservationStatus } from '../api/types';
-import { STATUS_LABEL } from '../lib/format';
 
 // Componentes visuais pequenos, inspirados nos primitivos do design system (PageTitle, botões, campos).
 
@@ -60,8 +58,4 @@ export function ErrorState({ error, onRetry }: { error: unknown; onRetry?: () =>
       )}
     </div>
   );
-}
-
-export function StatusBadge({ status }: { status: ReservationStatus }) {
-  return <span className={`badge badge--${status}`}>{STATUS_LABEL[status]}</span>;
 }

@@ -19,14 +19,16 @@ export function renderApp(route: string) {
 }
 
 export const loggedIn = http.get('*/api/auth/me', () =>
-  HttpResponse.json({ user: { id: 1, email: 'ana@exemplo.com', name: 'Ana Souza' } }),
+  HttpResponse.json({ user: { id: 1, email: 'ana@exemplo.com', name: 'Ana Souza', role: 'user' } }),
 );
 
 export const makeEvent = (overrides: Partial<EventItem> = {}): EventItem => ({
   id: 3,
   name: 'Camarote VIP - Noite Eletrônica',
+  subtitle: 'Camarote All Inclusive',
   venue: 'Espaço Dry',
   startsAt: '2026-11-15T23:00:00.000Z',
+  imageUrl: '/images/evento-padrao.jpg',
   priceCents: 45000,
   capacity: 2,
   available: 2,
@@ -44,6 +46,13 @@ export const makeReservation = (overrides: Partial<Reservation> = {}): Reservati
   expiresAt: '2026-10-16T12:05:00.000Z',
   confirmedAt: null,
   cancelledAt: null,
-  event: { id: 3, name: 'Camarote VIP - Noite Eletrônica', venue: 'Espaço Dry', startsAt: '2026-11-15T23:00:00.000Z' },
+  event: {
+    id: 3,
+    name: 'Camarote VIP - Noite Eletrônica',
+    subtitle: 'Camarote All Inclusive',
+    venue: 'Espaço Dry',
+    startsAt: '2026-11-15T23:00:00.000Z',
+    imageUrl: '/images/evento-padrao.jpg',
+  },
   ...overrides,
 });

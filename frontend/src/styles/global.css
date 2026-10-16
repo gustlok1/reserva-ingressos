@@ -158,30 +158,52 @@ a:hover {
   opacity: 0.5;
 }
 
+/* Principal (Figma "EU QUERO!" / "FINALIZAR COMPRA"): botão escuro dentro de uma moldura laranja brilhante. */
 .button--primary {
-  background: var(--brand);
-  color: var(--text-on-brand);
-  box-shadow: var(--shadow-on-brand);
+  margin: 5px; /* espaço para a moldura, que é desenhada com box-shadow */
+  background: linear-gradient(180deg, #2a2a2a, #121212);
+  color: var(--text-strong);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 0 5px var(--brand),
+    0 0 16px 4px rgba(255, 92, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .button--primary:hover:not(:disabled) {
-  background: var(--brand-hover);
-  color: var(--text-on-brand);
+  color: var(--text-strong);
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 0 5px var(--brand-hover),
+    0 0 24px 6px rgba(255, 92, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
 }
 
 .button--primary:active:not(:disabled) {
-  background: var(--brand-press);
-  box-shadow: var(--shadow-inset-on-brand);
+  background: linear-gradient(180deg, #121212, #1e1e1e);
+  box-shadow:
+    0 0 0 1px #000,
+    0 0 0 5px var(--brand-press),
+    0 0 10px 2px rgba(255, 92, 0, 0.4),
+    inset 0 2px 6px rgba(0, 0, 0, 0.8);
 }
 
+/* Secundário (Figma "REMOVER ESSE PEDIDO"): escuro em relevo, sem moldura. */
 .button--secondary {
-  background: linear-gradient(180deg, #262626, #151515);
+  background: linear-gradient(180deg, #232323, #1a1a1a);
   color: var(--text-strong);
-  box-shadow: 0 0 0 2px #0e0e0e, var(--shadow-pill);
+  box-shadow: var(--shadow-raised);
 }
 
 .button--secondary:hover:not(:disabled) {
   color: var(--brand);
+}
+
+.button--secondary:active:not(:disabled) {
+  box-shadow: var(--shadow-inset);
 }
 
 /* Botões do cabeçalho laranja (equivalente ao HeaderButton do DS). */

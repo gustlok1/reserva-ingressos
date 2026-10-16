@@ -167,8 +167,8 @@ Formato único: `{ "error": { "code": "...", "message": "...", "details"?: [...]
 | 4 | Eventos: listagem com busca e paginação, detalhe com disponibilidade | Concluída |
 | 5 | Reservas: criar (protegida), confirmar idempotente, cancelar, listar | Concluída |
 | 6 | Testes obrigatórios do backend (cenários 1 a 5) | Concluída (junto com a fase 5) |
-| 7 | Frontend: telas, countdown, tratamento de erros, teste do cenário 6 | Em andamento |
-| 8 | README e AI_USAGE.md | |
+| 7 | Frontend: telas, countdown, tratamento de erros, teste do cenário 6 | Concluída |
+| 8 | README e AI_USAGE.md | Concluída |
 
 Cada fase vai numa branch própria e é revisada antes do merge.
 

@@ -1,6 +1,7 @@
 import { transaction, type Database } from '../../db/connection';
 import type { Clock } from '../../lib/clock';
 import { AppError, conflict, notFound } from '../../lib/errors';
+import { DEFAULT_EVENT_IMAGE } from '../events/constants';
 import type { EventsRepository } from '../events/events.repository';
 import type { ReservationRow, ReservationsRepository } from './reservations.repository';
 
@@ -19,7 +20,14 @@ export function toReservationDto(row: ReservationRow, now: string) {
     expiresAt: row.expires_at,
     confirmedAt: row.confirmed_at,
     cancelledAt: row.cancelled_at,
-    event: { id: row.event_id, name: row.event_name, venue: row.event_venue, startsAt: row.event_starts_at },
+    event: {
+      id: row.event_id,
+      name: row.event_name,
+      subtitle: row.event_subtitle,
+      venue: row.event_venue,
+      startsAt: row.event_starts_at,
+      imageUrl: row.event_image_url || DEFAULT_EVENT_IMAGE,
+    },
   };
 }
 

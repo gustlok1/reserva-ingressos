@@ -17,13 +17,16 @@ export interface ReservationRow {
   event_name: string;
   event_venue: string;
   event_starts_at: string;
+  event_subtitle: string | null;
+  event_image_url: string | null;
 }
 
 // Toda leitura traz os dados do evento junto, para a tela "Minhas reservas" não precisar de outra chamada.
 const SELECT_RESERVATION = `
   SELECT r.id, r.user_id, r.event_id, r.quantity, r.unit_price_cents, r.total_cents, r.status,
          r.created_at, r.expires_at, r.confirmed_at, r.cancelled_at,
-         e.name AS event_name, e.venue AS event_venue, e.starts_at AS event_starts_at
+         e.name AS event_name, e.venue AS event_venue, e.starts_at AS event_starts_at,
+         e.subtitle AS event_subtitle, e.image_url AS event_image_url
   FROM reservations r
   JOIN events e ON e.id = r.event_id
 `;

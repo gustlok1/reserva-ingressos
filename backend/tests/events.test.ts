@@ -23,10 +23,11 @@ function insertReservation(db: Database, eventId: number, quantity: number, stat
 }
 
 describe('eventos', () => {
-  it('exige autenticação', async () => {
+  // Extra pós-entrega: o catálogo é público (na versão de entrega, exigia login). Reservar continua exigindo.
+  it('catálogo é público: lista e detalhe funcionam sem login', async () => {
     const { app } = createTestContext();
-    await request(app).get('/api/events').expect(401);
-    await request(app).get('/api/events/1').expect(401);
+    await request(app).get('/api/events').expect(200);
+    await request(app).get('/api/events/1').expect(200);
   });
 
   it('lista com os campos esperados, ordenada por data', async () => {
@@ -44,8 +45,10 @@ describe('eventos', () => {
     expect(res.body.data[0]).toEqual({
       id: 1,
       name: 'Rock na Arena',
+      subtitle: 'Pista Premium',
       venue: 'Arena Barueri',
       startsAt: expect.any(String),
+      imageUrl: '/images/evento-padrao.jpg',
       priceCents: 15000,
       capacity: 100,
       available: 100,

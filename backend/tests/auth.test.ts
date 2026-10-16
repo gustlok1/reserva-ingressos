@@ -17,7 +17,7 @@ describe('autenticação', () => {
 
     const res = await request(app).post('/api/auth/login').send({ email: ANA, password: DEMO_PASSWORD }).expect(200);
 
-    expect(res.body.user).toEqual({ id: 1, email: ANA, name: 'Ana Souza' });
+    expect(res.body.user).toEqual({ id: 1, email: ANA, name: 'Ana Souza', role: 'user' });
     expect(JSON.stringify(res.body)).not.toContain('password');
 
     const cookie = sessionCookie(res.headers['set-cookie']);

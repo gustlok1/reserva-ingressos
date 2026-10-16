@@ -14,6 +14,11 @@ export function openDatabase(path: string): Database {
   db.exec('PRAGMA foreign_keys = ON');
   // Se outra conexão estiver escrevendo, espera até 5s pelo lock em vez de falhar na hora com SQLITE_BUSY.
   db.exec('PRAGMA busy_timeout = 5000');
+  // Função SQL própria para busca sem acento e sem diferenciar maiúsculas: unaccent('Eletrônica') = 'eletronica'.
+  // O LIKE do SQLite só ignora maiúsculas em letras sem acento, por isso a normalização é feita aqui em JS.
+  db.function('unaccent', { deterministic: true }, (value) =>
+    value == null ? null : String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(),
+  );
   return db;
 }
 

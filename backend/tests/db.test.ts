@@ -11,18 +11,18 @@ function count(db: ReturnType<typeof openDatabase>, table: string) {
 describe('migrations e seed', () => {
   it('rodar migrations duas vezes não reaplica nada', () => {
     const db = openDatabase(':memory:');
-    expect(runMigrations(db)).toEqual(['001_init.sql']);
+    expect(runMigrations(db)).toEqual(['001_init.sql', '002_extras.sql']);
     expect(runMigrations(db)).toEqual([]);
   });
 
-  it('seed é idempotente e cria 2 usuários e 3 eventos futuros, um com capacidade 2', () => {
+  it('seed é idempotente e cria 2 usuários + 1 admin e 3 eventos futuros, um com capacidade 2', () => {
     const db = openDatabase(':memory:');
     runMigrations(db);
     const now = new Date('2026-10-16T12:00:00.000Z');
 
-    expect(seed(db, now)).toEqual({ usersInserted: 2, eventsInserted: 3 });
+    expect(seed(db, now)).toEqual({ usersInserted: 3, eventsInserted: 3 });
     expect(seed(db, now)).toEqual({ usersInserted: 0, eventsInserted: 0 });
-    expect(count(db, 'users')).toBe(2);
+    expect(count(db, 'users')).toBe(3);
     expect(count(db, 'events')).toBe(3);
 
     const events = db.prepare('SELECT starts_at, capacity FROM events').all() as { starts_at: string; capacity: number }[];

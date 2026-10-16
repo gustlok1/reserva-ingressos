@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express';
-import { unauthorized } from '../lib/errors';
+import { forbidden, unauthorized } from '../lib/errors';
 import type { AuthService, AuthUser } from '../modules/auth/auth.service';
 
 export const SESSION_COOKIE = 'session';
@@ -14,6 +14,17 @@ export function requireAuth(authService: AuthService): RequestHandler {
 
     res.locals.user = user;
     next();
+  };
+}
+
+// Rotas de administração: exige sessão válida (401) e papel 'admin' (403).
+export function requireAdmin(authService: AuthService): RequestHandler {
+  const authenticate = requireAuth(authService);
+  return (req, res, next) => {
+    authenticate(req, res, () => {
+      if (currentUser(res).role !== 'admin') throw forbidden();
+      next();
+    });
   };
 }
 

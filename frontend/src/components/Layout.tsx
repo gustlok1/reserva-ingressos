@@ -56,7 +56,7 @@ export function Layout() {
 
       <footer className="footer">
         <div className="footer__inner">
-          <span>© 2026 Dry Telecom · Todos os direitos reservados</span>
+          <span>2026 · Dry Telecom · Todos os direitos reservados · Barueri/SP</span>
           <span>Checkout seguro</span>
         </div>
       </footer>

@@ -80,6 +80,12 @@ Não existe cron. Uma reserva `PENDING` com `agora >= expires_at` é tratada com
 - `RESERVATION_TTL_SECONDS` permite encurtar o prazo em demonstrações.
 - O countdown do frontend usa `expiresAt` e o horário do servidor, não o relógio do navegador.
 
+### Catálogo de eventos
+
+- `GET /api/events?search=&page=1&pageSize=10`: paginação no servidor (`LIMIT/OFFSET`), ordenada por `starts_at, id`. O `id` desempata eventos no mesmo horário, então a ordem é estável entre páginas.
+- A disponibilidade é calculada por SQL em cada leitura, numa única definição (`OCCUPIED_SQL`) que a criação de reserva também usa. Assim a tela e a regra de negócio nunca divergem.
+- Eventos que já começaram continuam listados, com `hasStarted: true`. A API recusa reservas para eles.
+
 ### Dinheiro
 
 Valores inteiros em centavos (`price_cents`, `total_cents`). A reserva congela o `unit_price_cents` no momento em que é criada.
@@ -105,8 +111,8 @@ Formato único: `{ "error": { "code": "...", "message": "...", "details"?: [...]
 |---|---|---|
 | 1 | Monorepo (npm workspaces), backend Express, frontend Vite | Concluída |
 | 2 | Banco: conexão, migrations, seed idempotente | Concluída |
-| 3 | Autenticação: login, logout, `/me`, middleware, erros padronizados | Em andamento |
-| 4 | Eventos: listagem com busca e paginação, detalhe com disponibilidade | |
+| 3 | Autenticação: login, logout, `/me`, middleware, erros padronizados | Concluída |
+| 4 | Eventos: listagem com busca e paginação, detalhe com disponibilidade | Em andamento |
 | 5 | Reservas: criar (protegida), confirmar idempotente, cancelar, listar | |
 | 6 | Testes obrigatórios do backend (cenários 1 a 5) | |
 | 7 | Frontend: telas, countdown, tratamento de erros | |
@@ -125,4 +131,5 @@ Cada fase vai numa branch própria e é revisada antes do merge.
 
 - O `node:sqlite` ainda emite `ExperimentalWarning` no Node 22–26. É inofensivo.
 - O SQLite garante consistência entre processos da mesma máquina, não entre máquinas diferentes.
+- A busca usa `LIKE`, que no SQLite ignora maiúsculas/minúsculas só em letras sem acento: "rock" encontra "Rock", mas "ELETRÔNICA" não encontra "Eletrônica". Para resolver, seria preciso uma coluna normalizada (sem acento, minúscula).
 - O seed cria eventos com datas relativas ao dia em que roda. Se as datas já tiverem passado, use `npm run db:reset`.

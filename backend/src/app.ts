@@ -6,6 +6,10 @@ import { errorHandler, notFoundHandler } from './http/error-handler';
 import { createAuthRepository } from './modules/auth/auth.repository';
 import { createAuthService } from './modules/auth/auth.service';
 import { authRoutes } from './modules/auth/auth.routes';
+import { requireAuth } from './http/require-auth';
+import { createEventsRepository } from './modules/events/events.repository';
+import { createEventsService } from './modules/events/events.service';
+import { eventsRoutes } from './modules/events/events.routes';
 
 export interface AppDeps {
   db: Database;
@@ -18,6 +22,7 @@ export interface AppDeps {
 // os testes passam um banco isolado e um relógio controlado.
 export function createApp({ db, clock, sessionTtlHours }: AppDeps) {
   const authService = createAuthService(createAuthRepository(db), clock, sessionTtlHours);
+  const eventsService = createEventsService(createEventsRepository(db), clock);
 
   const app = express();
   app.disable('x-powered-by');
@@ -29,6 +34,8 @@ export function createApp({ db, clock, sessionTtlHours }: AppDeps) {
   });
 
   app.use('/api/auth', authRoutes(authService));
+  // Daqui para baixo, todas as rotas exigem sessão válida.
+  app.use('/api/events', requireAuth(authService), eventsRoutes(eventsService));
 
   app.use('/api', notFoundHandler);
   app.use(errorHandler);

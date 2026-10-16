@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
+    "db:migrate": "tsx src/scripts/db.ts migrate",
+    "db:seed": "tsx src/scripts/db.ts seed",
+    "db:setup": "tsx src/scripts/db.ts setup",
+    "db:reset": "tsx src/scripts/db.ts reset",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

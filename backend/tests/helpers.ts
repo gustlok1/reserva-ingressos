@@ -1,3 +1,6 @@
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import request from 'supertest';
 import { createApp } from '../src/app';
 import { openDatabase } from '../src/db/connection';
@@ -27,6 +30,11 @@ export function createTestContext({ path = ':memory:' } = {}) {
   const clock = createTestClock();
   const app = createApp({ db, clock, sessionTtlHours: 8, reservationTtlSeconds: 300 });
   return { db, clock, app };
+}
+
+// Caminho de um arquivo SQLite novo numa pasta temporária (para testes que precisam de banco em disco).
+export function tempDatabasePath() {
+  return join(mkdtempSync(join(tmpdir(), 'reservas-test-')), 'test.db');
 }
 
 // Faz login e devolve um "agent" do supertest, que guarda o cookie entre as requisições.

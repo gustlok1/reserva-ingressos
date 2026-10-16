@@ -10,6 +10,9 @@ import { requireAuth } from './http/require-auth';
 import { createEventsRepository } from './modules/events/events.repository';
 import { createEventsService } from './modules/events/events.service';
 import { eventsRoutes } from './modules/events/events.routes';
+import { createReservationsRepository } from './modules/reservations/reservations.repository';
+import { createReservationsService } from './modules/reservations/reservations.service';
+import { reservationsRoutes } from './modules/reservations/reservations.routes';
 
 export interface AppDeps {
   db: Database;
@@ -20,9 +23,17 @@ export interface AppDeps {
 
 // Monta o app a partir das dependências: o servidor passa o banco real e o relógio do sistema,
 // os testes passam um banco isolado e um relógio controlado.
-export function createApp({ db, clock, sessionTtlHours }: AppDeps) {
+export function createApp({ db, clock, sessionTtlHours, reservationTtlSeconds }: AppDeps) {
   const authService = createAuthService(createAuthRepository(db), clock, sessionTtlHours);
-  const eventsService = createEventsService(createEventsRepository(db), clock);
+  const eventsRepository = createEventsRepository(db);
+  const eventsService = createEventsService(eventsRepository, clock);
+  const reservationsService = createReservationsService({
+    db,
+    reservations: createReservationsRepository(db),
+    events: eventsRepository,
+    clock,
+    ttlSeconds: reservationTtlSeconds,
+  });
 
   const app = express();
   app.disable('x-powered-by');
@@ -36,6 +47,7 @@ export function createApp({ db, clock, sessionTtlHours }: AppDeps) {
   app.use('/api/auth', authRoutes(authService));
   // Daqui para baixo, todas as rotas exigem sessão válida.
   app.use('/api/events', requireAuth(authService), eventsRoutes(eventsService));
+  app.use('/api/reservations', requireAuth(authService), reservationsRoutes(reservationsService, clock));
 
   app.use('/api', notFoundHandler);
   app.use(errorHandler);
